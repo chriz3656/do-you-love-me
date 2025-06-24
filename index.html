@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,59 +6,224 @@
   <title>Do you love me? | @coding.stella</title>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&family=Poppins&display=swap" rel="stylesheet">
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
+      display: grid;
+      justify-content: center;
+      align-items: center;
       background-color: #ffe6e9;
       font-family: "Quicksand", sans-serif;
+      min-height: 100vh;
+    }
+    .container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      transition: 0.2s;
       text-align: center;
-      padding: 50px;
+    }
+    .local-gif {
+      width: 100%;
+      max-width: 300px;
+      border-radius: 10px;
+      margin: 0 auto 2rem auto;
+      pointer-events: none;
+    }
+    .question {
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+    }
+    .button-container {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
     }
     .btn {
-      background: #ff6b81;
-      color: white;
       border: none;
       border-radius: 50px;
       padding: 10px 20px;
+      font-family: "Poppins", sans-serif;
       font-size: 18px;
       cursor: pointer;
-      margin: 20px;
+      transition: all 0.3s ease;
+      background-color: #ff6b81;
+      color: white;
+      transform: scale(1.05);
+      box-shadow: 0px 4px 15px rgba(255, 107, 129, 0.5);
+      position: absolute;
     }
     .btn:hover {
       background-color: #ffa4b1;
+      transform: scale(1.1);
+      box-shadow: 0px 6px 20px rgba(255, 107, 129, 0.7);
+    }
+    .yes-btn { right: 54%; }
+    .no-btn { left: 54%; }
+
+    .result-container {
+      display: none;
+      opacity: 0;
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      transition: opacity 1.5s ease;
+      text-align: center;
+    }
+    .result-container.show {
+      display: block;
+      opacity: 1;
+    }
+    .gif-result {
+      border-radius: 10px;
+      margin-bottom: 2rem;
+      max-width: 300px;
+    }
+    .result-container h2 {
+      font-size: 2.5rem;
+    }
+
+    .cssload-main {
+      display: none;
+      position: absolute;
+      top: 17%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .cssload-heart {
+      animation: cssload-heart 2.88s cubic-bezier(0.75, 0, 0.5, 1) infinite;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+    }
+    .cssload-heartL, .cssload-heartR {
+      width: 1em;
+      height: 1em;
+      background-color: #ff0000;
+      position: absolute;
+      border-radius: 100%;
+    }
+    .cssload-heartL {
+      animation: cssload-heartL 2.88s infinite;
+      transform: translate(-28px, -27px);
+    }
+    .cssload-heartR {
+      animation: cssload-heartR 2.88s infinite;
+      transform: translate(28px, -27px);
+    }
+    .cssload-square {
+      width: 1em;
+      height: 1em;
+      background-color: #ff0000;
+      transform: scale(1) rotate(-45deg);
+      animation: cssload-square 2.88s infinite;
+    }
+    .cssload-shadow {
+      top: 97px;
+      left: 50%;
+      width: 1em;
+      height: 0.24em;
+      background-color: rgb(215, 215, 215);
+      border-radius: 50%;
+      animation: cssload-shadow 2.88s infinite;
+    }
+
+    @keyframes cssload-square {
+      50% { border-radius: 100%; transform: scale(0.5) rotate(-45deg); }
+      100% { transform: scale(1) rotate(-45deg); }
+    }
+    @keyframes cssload-heart {
+      50% { transform: rotate(360deg); }
+      100% { transform: rotate(720deg); }
+    }
+    @keyframes cssload-heartL {
+      60% { transform: scale(0.4); }
+    }
+    @keyframes cssload-heartR {
+      40% { transform: scale(0.4); }
+    }
+    @keyframes cssload-shadow {
+      50% { transform: scale(0.5); }
+    }
+
+    @media (max-width: 600px) {
+      .btn {
+        font-size: 14px;
+        padding: 8px 16px;
+      }
+      .question {
+        font-size: 2.2rem;
+      }
+      .gif-result, .local-gif {
+        max-width: 220px;
+      }
     }
   </style>
 </head>
 <body>
+
+  <!-- 🎵 SOUND EFFECTS -->
   <audio id="bgMusic" src="assets/bg-music.mp3" autoplay loop></audio>
   <audio id="hoverSound" src="assets/hover-boing.mp3"></audio>
   <audio id="clickSound" src="assets/click-chime.mp3"></audio>
 
-  <h1>Do you love me? 💖</h1>
-  <button class="btn" id="yesBtn">Yes</button>
-  <button class="btn" id="noBtn">No</button>
+  <!-- 🐻 QUESTION SCREEN -->
+  <div class="question-container container">
+    <img class="local-gif" src="https://i.ibb.co/S4BzW1GM/Reply-me-love.gif" alt="Cute bear asking 'Do you love me?'" />
+    <h2 class="question">Do you love me?</h2>
+    <div class="button-container">
+      <button class="yes-btn btn js-yes-btn" aria-label="Yes, I love you">Yes</button>
+      <button class="no-btn btn js-no-btn" aria-label="No, I don’t">No</button>
+    </div>
+  </div>
 
-  <h2 id="result" style="display:none; margin-top:30px;">I knew it 😍!</h2>
+  <!-- 💖 LOVE RESULT SCREEN -->
+  <div class="result-container container">
+    <img class="gif-result" src="https://i.ibb.co/yFgz9gND/Love-me.gif" alt="Cute bear smiling after love" />
+    <h2>I knew it 😍!</h2>
+  </div>
 
+  <!-- ❤️ HEART LOADER -->
+  <div class="cssload-main">
+    <div class="cssload-heart">
+      <span class="cssload-heartL"></span>
+      <span class="cssload-heartR"></span>
+      <span class="cssload-square"></span>
+    </div>
+    <div class="cssload-shadow"></div>
+  </div>
+
+  <!-- 🧠 SCRIPT -->
   <script>
-    const yesBtn = document.getElementById("yesBtn");
-    const noBtn = document.getElementById("noBtn");
-    const result = document.getElementById("result");
+    const questionContainer = document.querySelector(".question-container");
+    const resultContainer = document.querySelector(".result-container");
+    const heartLoader = document.querySelector(".cssload-main");
+    const yesBtn = document.querySelector(".js-yes-btn");
+    const noBtn = document.querySelector(".js-no-btn");
+
     const clickSound = document.getElementById("clickSound");
     const hoverSound = document.getElementById("hoverSound");
 
-    yesBtn.addEventListener("click", () => {
-      clickSound.play();
-      yesBtn.style.display = "none";
-      noBtn.style.display = "none";
-      result.style.display = "block";
-    });
-
-    noBtn.addEventListener("mouseover", () => {
+    function moveNoButton() {
       hoverSound.play();
       const newX = Math.floor(Math.random() * (window.innerWidth - 100));
       const newY = Math.floor(Math.random() * (window.innerHeight - 100));
-      noBtn.style.position = "absolute";
-      noBtn.style.left = newX + "px";
-      noBtn.style.top = newY + "px";
+      noBtn.style.left = `${newX}px`;
+      noBtn.style.top = `${newY}px`;
+    }
+
+    noBtn.addEventListener("mouseover", moveNoButton);
+    noBtn.addEventListener("click", moveNoButton);
+
+    yesBtn.addEventListener("click", () => {
+      clickSound.play();
+      questionContainer.style.display = "none";
+      heartLoader.style.display = "inherit";
+      setTimeout(() => {
+        heartLoader.style.display = "none";
+        resultContainer.classList.add("show");
+      }, 3000);
     });
   </script>
 </body>
